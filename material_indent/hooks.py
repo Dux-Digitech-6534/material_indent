@@ -5,6 +5,30 @@ app_description = "Material Indent"
 app_email = "shubhangipawar7225@gmail.com"
 app_license = "mit"
 
+
+
+
+doc_events = {
+    "Material Request": {
+        "validate": "material_indent.material_indent.doctype.material_indent.material_indent.validate_material_request",
+        "on_submit": "material_indent.material_indent.doctype.material_indent.material_indent.update_purchase"
+    },
+    "Stock Entry": {
+        "validate": "material_indent.material_indent.doctype.material_indent.material_indent.validate_stock_entry",
+        "on_submit": "material_indent.material_indent.doctype.material_indent.material_indent.update_issue"
+    }
+}
+
+
+
+# doc_events = {
+#     "Material Request": {
+#         "on_submit": "material_indent.material_indent.doctype.material_indent.material_indent.update_purchase"
+#     },
+#    "Stock Entry": {
+#         "on_submit": "material_indent.material_indent.doctype.material_indent.material_indent.update_issue"
+#     }
+# }
 # Apps
 # ------------------
 
