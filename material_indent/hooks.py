@@ -21,6 +21,39 @@ doc_events = {
 
 
 
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["name", "in", [
+
+                # Material Request Item
+                "Material Request Item-purchased_qty",
+                "Material Request Item-remaining_qty",
+                "Material Request Item-issued_qty",
+                "Material Request Item-specification",
+                "Material Request Item-material_indent",
+                "Material Request Item-material_indent_item",
+
+                # Stock Entry Detail
+                "Stock Entry Detail-material_indent",
+                "Stock Entry Detail-material_indent_item",
+                "Stock Entry Detail-issue_qty",
+
+                # Material Request
+                "Material Request-user",
+                "Material Request-remark",
+
+                # Stock Entry
+                "Stock Entry-user",
+                "Stock Entry-remark"
+
+            ]]
+        ]
+    }
+]
+
+
 # doc_events = {
 #     "Material Request": {
 #         "on_submit": "material_indent.material_indent.doctype.material_indent.material_indent.update_purchase"
