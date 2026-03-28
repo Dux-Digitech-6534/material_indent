@@ -1,1 +1,109 @@
-[]
+[
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request Item",
+    "fieldname": "purchased_qty",
+    "fieldtype": "Float",
+    "label": "Purchased Qty",
+    "insert_after": "qty"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request Item",
+    "fieldname": "remaining_qty",
+    "fieldtype": "Float",
+    "label": "Remaining Qty",
+    "insert_after": "purchased_qty"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request Item",
+    "fieldname": "issued_qty",
+    "fieldtype": "Float",
+    "label": "Issued Qty",
+    "insert_after": "remaining_qty"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request Item",
+    "fieldname": "specification",
+    "fieldtype": "Small Text",
+    "label": "Specification",
+    "insert_after": "issued_qty"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request Item",
+    "fieldname": "material_indent",
+    "fieldtype": "Data",
+    "label": "Material Indent",
+    "insert_after": "specification"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request Item",
+    "fieldname": "material_indent_item",
+    "fieldtype": "Data",
+    "label": "Material Indent Item",
+    "insert_after": "material_indent"
+  },
+
+  {
+    "doctype": "Custom Field",
+    "dt": "Stock Entry Detail",
+    "fieldname": "material_indent",
+    "fieldtype": "Data",
+    "label": "Material Indent",
+    "insert_after": "item_code"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Stock Entry Detail",
+    "fieldname": "material_indent_item",
+    "fieldtype": "Data",
+    "label": "Material Indent Item",
+    "insert_after": "material_indent"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Stock Entry Detail",
+    "fieldname": "issue_qty",
+    "fieldtype": "Float",
+    "label": "Issue Qty",
+    "insert_after": "material_indent_item"
+  },
+
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request",
+    "fieldname": "user",
+    "fieldtype": "Data",
+    "label": "User",
+    "insert_after": "company"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Material Request",
+    "fieldname": "remark",
+    "fieldtype": "Small Text",
+    "label": "Remark",
+    "insert_after": "user"
+  },
+
+  {
+    "doctype": "Custom Field",
+    "dt": "Stock Entry",
+    "fieldname": "user",
+    "fieldtype": "Data",
+    "label": "User",
+    "insert_after": "company"
+  },
+  {
+    "doctype": "Custom Field",
+    "dt": "Stock Entry",
+    "fieldname": "remark",
+    "fieldtype": "Small Text",
+    "label": "Remark",
+    "insert_after": "user"
+  }
+]
