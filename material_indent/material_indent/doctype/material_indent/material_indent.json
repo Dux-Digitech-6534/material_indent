@@ -6,25 +6,19 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "user",
+  "custom_username",
   "naming_series",
   "title",
-  "attachment",
+  "custome_attachment",
   "company",
   "column_break_jyup",
   "transaction_date",
   "required_by",
-  "remark",
+  "custom_remark",
   "section_break_gjjg",
   "table_feob"
  ],
  "fields": [
-  {
-   "fieldname": "user",
-   "fieldtype": "Data",
-   "label": "User Name And Department",
-   "read_only": 1
-  },
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
@@ -37,11 +31,6 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Title"
-  },
-  {
-   "fieldname": "attachment",
-   "fieldtype": "Attach",
-   "label": "Note Sheet"
   },
   {
    "fieldname": "column_break_jyup",
@@ -59,13 +48,6 @@
    "label": "Required By"
   },
   {
-   "fieldname": "remark",
-   "fieldtype": "Small Text",
-   "in_list_view": 1,
-   "label": "Remark",
-   "reqd": 1
-  },
-  {
    "fieldname": "section_break_gjjg",
    "fieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
@@ -80,12 +62,30 @@
    "fieldtype": "Link",
    "label": "Company ",
    "options": "Company"
+  },
+  {
+   "fieldname": "custom_username",
+   "fieldtype": "Data",
+   "label": "User Name And Department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "custom_remark",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Remark",
+   "reqd": 1
+  },
+  {
+   "fieldname": "custome_attachment",
+   "fieldtype": "Attach",
+   "label": "Note Sheet"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 14:43:22.258371",
+ "modified": "2026-03-31 15:01:55.244026",
  "modified_by": "Administrator",
  "module": "Material Indent",
  "name": "Material Indent",

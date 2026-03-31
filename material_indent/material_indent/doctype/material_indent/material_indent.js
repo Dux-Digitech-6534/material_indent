@@ -26,7 +26,7 @@ frappe.ui.form.on('Material Indent', {
                         company
                     ].filter(Boolean).join(' - ');
 
-                    frm.set_value('user', final_value);
+                    frm.set_value('custom_username', final_value);
                 });
 
         }
@@ -244,7 +244,7 @@ frappe.ui.form.on('Material Indent', {
 
             for (let row of rows) {
 
-                let qty = row.remaining_qty || 0;
+                let qty = row.custom_qty_balanced || 0;
 
                 // 🔥 VALIDATION
                 if (qty < 0) {
@@ -264,8 +264,9 @@ frappe.ui.form.on('Material Indent', {
                         s_warehouse: row.warehouse || "Stores - SIT",
 
                         // 🔥 IMPORTANT LINKS
-                        material_indent: frm.doc.name,
-                        material_indent_item: row.name
+                        custom_material_indent: frm.doc.name,
+                        custom_material_indent_item: row.name,
+                          custom_specification: row.custom_specification
                     });
                 }
             }
@@ -282,9 +283,11 @@ frappe.ui.form.on('Material Indent', {
                         doctype: "Stock Entry",
                         stock_entry_type: "Material Issue",
                         company: frm.doc.company,
-                        user: frm.doc.user,
-                        remark: frm.doc.remark,
-                        items: items
+                        custom_username: frm.doc.custom_username,
+                        custom_remark: frm.doc.custom_remark,
+                        custom_attachment : frm.doc.custome_attachment,
+                        items: items,
+                      
                     }
                 },
                 callback: function(r) {
@@ -305,7 +308,7 @@ frappe.ui.form.on('Material Indent', {
 
             for (let row of rows) {
 
-                let qty = row.remaining_qty || 0;
+                let qty = row.custom_qty_balanced || 0;
 
                 // 🔥 VALIDATION
                 if (qty < 0) {
@@ -324,10 +327,11 @@ frappe.ui.form.on('Material Indent', {
                         qty: qty,
                         schedule_date: frm.doc.required_by,
                         uom: row.uom,
-                        material_indent: frm.doc.name,
+                        custom_material_indent: frm.doc.name,
 
                         // 🔥 YE LINE ADD KAR
-                        material_indent_item: row.name
+                        custom_material_indent_item: row.name,
+                          custom_specification: row.custom_specification
                     });
                 }
             }
@@ -344,9 +348,11 @@ frappe.ui.form.on('Material Indent', {
                         doctype: "Material Request",
                         material_request_type: "Purchase",
                         company: frm.doc.company,
-                        user: frm.doc.user,
-                        remark: frm.doc.remark,
-                        items: items
+                        custom_username: frm.doc.custom_username,
+                        custom_remark: frm.doc.custom_remark,
+                        items: items,
+                        custom_attachment : frm.doc.custome_attachment
+                      
                     }
                 },
                 callback: function(r) {
@@ -360,6 +366,7 @@ frappe.ui.form.on('Material Indent', {
         });
 
         // Rename Actions → Purpose
+
         setTimeout(() => {
             if (frm.page.actions_btn_group) {
                 frm.page.actions_btn_group.find('.dropdown-toggle').html('Purpose');
@@ -379,13 +386,13 @@ frappe.ui.form.on('Material Indent', {
 
         // 🔥 CHILD TABLE FIELDS READ ONLY
         frm.fields_dict.table_feob.grid.update_docfield_property(
-            'purchased_qty',
+            'custom_purchase_qty',
             'read_only',
             1
         );
 
         frm.fields_dict.table_feob.grid.update_docfield_property(
-            'issued_qty',
+            'custom_issue_qty',
             'read_only',
             1
         );
@@ -404,11 +411,11 @@ frappe.ui.form.on('Material Request Item', {
         calculate_remaining(frm, cdt, cdn);
     },
 
-    purchased_qty: function(frm, cdt, cdn) {
+    custom_purchase_qty: function(frm, cdt, cdn) {
         calculate_remaining(frm, cdt, cdn);
     },
 
-    issued_qty: function(frm, cdt, cdn) {
+    custom_issue_qty: function(frm, cdt, cdn) {
         calculate_remaining(frm, cdt, cdn);
     }
 });
@@ -416,9 +423,9 @@ frappe.ui.form.on('Material Request Item', {
 function calculate_remaining(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
 
-    row.remaining_qty = (row.qty || 0)
-                      - (row.purchased_qty || 0)
-                      - (row.issued_qty || 0);
+    row.custom_qty_balanced = (row.qty || 0)
+                      - (row.custom_purchase_qty || 0)
+                      - (row.custom_issue_qty || 0);
 
     frm.refresh_field('table_feob'); // 🔥 IMPORTANT CHANGE
 }
@@ -429,9 +436,9 @@ frappe.ui.form.on('Material Indent', {
 
         (frm.doc.table_feob || []).forEach(row => {
 
-            row.remaining_qty = (row.qty || 0)
-                              - (row.purchased_qty || 0)
-                              - (row.issued_qty || 0);
+            row.custom_qty_balanced = (row.qty || 0)
+                              - (row.custom_purchase_qty || 0)
+                              - (row.custom_issue_qty || 0);
         });
 
         frm.refresh_field('table_feob'); // 🔥 IMPORTANT

@@ -6,8 +6,6 @@ app_email = "shubhangipawar7225@gmail.com"
 app_license = "mit"
 
 
-
-
 doc_events = {
     "Material Request": {
         "validate": "material_indent.material_indent.doctype.material_indent.material_indent.validate_material_request",
@@ -20,10 +18,42 @@ doc_events = {
 }
 
 
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": [
+            ["name", "in", [
+                # 🔹 Parent - Material Request
+                "Material Request-custom_attachment",
+                "Material Request-custom_remark",
+                "Material Request-custom_username",
+
+                # 🔹 Parent - Stock Entry
+                "Stock Entry-custom_attachment",
+                "Stock Entry-custom_remark",
+                "Stock Entry-custom_username",
+
+                # 🔹 Child - Stock Entry Detail
+                "Stock Entry Detail-custom_specification",
+                "Stock Entry Detail-custom_material_indent_item",
+                "Stock Entry Detail-custom_material_indent",
+                "Stock Entry Detail-custom_issue_qty",
+
+                # 🔹 Child - Material Request Item
+                "Material Request Item-custom_material_indent_item",
+                "Material Request Item-custom_material_indent",
+                "Material Request Item-custom_specification",
+                "Material Request Item-custom_qty_balanced",
+                "Material Request Item-custom_issue_qty",
+                "Material Request Item-custom_purchase_qty"
+            ]]
+        ]
+    }
+]
 
 
 
-fixtures = ["Custom Field"]
+
 
 # fixtures = [
 #     {
