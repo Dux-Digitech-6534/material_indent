@@ -293,7 +293,12 @@ frappe.ui.form.on('Material Indent', {
                 },
                 callback: function(r) {
                     if (r.message) {
-                        frappe.msgprint("✅ Stock Entry Created");
+
+                        frappe.show_alert({
+    message: "✅ Stock Entry Created",
+    indicator: "green"
+}, 3);
+                        // frappe.msgprint("✅ Stock Entry Created");
                         frappe.set_route("Form", "Stock Entry", r.message.name);
                     }
                 }
@@ -358,7 +363,12 @@ frappe.ui.form.on('Material Indent', {
                 },
                 callback: function(r) {
                     if (r.message) {
-                        frappe.msgprint("✅ Purchase Request Created");
+
+                                                frappe.show_alert({
+    message: "✅ Purchase Request Created",
+    indicator: "green"
+}, 3);
+                        // frappe.msgprint("✅ Purchase Request Created");
                         frappe.set_route("Form", "Material Request", r.message.name);
                     }
                 }
