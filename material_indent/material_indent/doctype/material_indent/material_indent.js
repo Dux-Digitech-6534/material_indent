@@ -35,6 +35,7 @@ frappe.ui.form.on('Material Indent', {
 
 
 
+
 frappe.ui.form.on('Material Request Item', {
 
     item_code: function(frm, cdt, cdn) {
@@ -261,7 +262,7 @@ frappe.ui.form.on('Material Indent', {
                     items.push({
                         item_code: row.item_code,
                         qty: qty,
-                        s_warehouse: row.warehouse || "Stores - SIT",
+                        s_warehouse: row.warehouse ,
 
                         // 🔥 IMPORTANT LINKS
                         custom_material_indent: frm.doc.name,
