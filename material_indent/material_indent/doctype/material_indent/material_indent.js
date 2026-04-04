@@ -321,6 +321,7 @@ frappe.ui.form.on('Material Indent', {
             custom_username: frm.doc.custom_username,
             custom_remark: frm.doc.custom_remark,
             custom_attachment: frm.doc.custome_attachment,
+            custom_specification:frm.doc.custom_specification
                                 }
                             },
                             callback: function(r) {
@@ -398,6 +399,7 @@ frappe.ui.form.on('Material Indent', {
             custom_username: frm.doc.custom_username,
             custom_remark: frm.doc.custom_remark,
             custom_attachment: frm.doc.custome_attachment,
+            custom_specification:frm.doc.custom_specification
                             }
                         },
                         callback: function(r) {
