@@ -316,7 +316,11 @@ frappe.ui.form.on('Material Indent', {
                                     doctype: "Stock Entry",
                                     stock_entry_type: "Material Issue",
                                     company: frm.doc.company,
-                                    items: items
+                                    items: items,
+                                     // ✅ ADD THESE
+            custom_username: frm.doc.custom_username,
+            custom_remark: frm.doc.custom_remark,
+            custom_attachment: frm.doc.custome_attachment,
                                 }
                             },
                             callback: function(r) {
@@ -389,7 +393,11 @@ frappe.ui.form.on('Material Indent', {
                                 doctype: "Material Request",
                                 material_request_type: "Purchase",
                                 company: frm.doc.company,
-                                items: items
+                                items: items,
+                                   // ✅ ADD THESE
+            custom_username: frm.doc.custom_username,
+            custom_remark: frm.doc.custom_remark,
+            custom_attachment: frm.doc.custome_attachment,
                             }
                         },
                         callback: function(r) {
@@ -409,6 +417,9 @@ frappe.ui.form.on('Material Indent', {
 
     }
 });
+
+
+
 
 // frappe.ui.form.on('Material Indent', {
 //     refresh: function(frm) {
