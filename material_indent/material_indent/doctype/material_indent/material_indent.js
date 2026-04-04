@@ -233,10 +233,13 @@ function toggle_button(frm) {
 
 // 🔥 PURPOSE BUTTON FINAL (CORRECTED)
 
+
+
 frappe.ui.form.on('Material Indent', {
     refresh: function(frm) {
 
-        frm.page.clear_actions_menu();
+        // ❌ REMOVE THIS (ye issue ka main reason hai)
+        // frm.page.clear_actions_menu();
 
         // ==============================
         // 🔥 MATERIAL ISSUE (POPUP)
@@ -255,7 +258,7 @@ frappe.ui.form.on('Material Indent', {
                 size: 'large',
                 fields: rows.map(row => ({
                     fieldtype: 'Float',
-                    label: `${row.item_code} (Balance: ${row.custom_qty_balanced})`,
+                    label: `${row.item_code} (Bal: ${row.custom_qty_balanced || 0})`,
                     fieldname: row.name,
                     default: 0
                 })),
@@ -263,60 +266,69 @@ frappe.ui.form.on('Material Indent', {
                 primary_action(values) {
 
                     let items = [];
+                    let promises = [];
 
-                    for (let row of rows) {
+                    rows.forEach(row => {
 
                         let qty = values[row.name] || 0;
+                        if (qty <= 0) return;
 
-                        if (qty <= 0) continue;
+                        let p = frappe.db.get_value("Bin", {
+                            item_code: row.item_code,
+                            warehouse: row.from_warehouse
+                        }, "actual_qty").then(r => {
 
-                        if (qty > row.custom_qty_balanced) {
-                            frappe.msgprint(`❌ Issue qty exceeds balance for ${row.item_code}`);
+                            let stock = r.message?.actual_qty || 0;
+
+                            if (qty > stock) {
+                                frappe.throw(`❌ Stock not available for ${row.item_code} (Available: ${stock})`);
+                            }
+
+                            if (qty > (row.custom_qty_balanced || 0)) {
+                                frappe.throw(`❌ Issue qty exceeds balance for ${row.item_code}`);
+                            }
+
+                            items.push({
+                                item_code: row.item_code,
+                                qty: qty,
+                                s_warehouse: row.from_warehouse,
+
+                                custom_material_indent: frm.doc.name,
+                                custom_material_indent_item: row.name
+                            });
+
+                        });
+
+                        promises.push(p);
+                    });
+
+                    Promise.all(promises).then(() => {
+
+                        if (!items.length) {
+                            frappe.msgprint("❌ Enter qty first");
                             return;
                         }
 
-                        items.push({
-                            item_code: row.item_code,
-                            qty: qty,
-                            s_warehouse: row.from_warehouse,
-
-                            custom_material_indent: frm.doc.name,
-                            custom_material_indent_item: row.name,
-                            custom_specification: row.custom_specification
+                        frappe.call({
+                            method: "frappe.client.insert",
+                            args: {
+                                doc: {
+                                    doctype: "Stock Entry",
+                                    stock_entry_type: "Material Issue",
+                                    company: frm.doc.company,
+                                    items: items
+                                }
+                            },
+                            callback: function(r) {
+                                if (r.message) {
+                                    frappe.show_alert("✅ Stock Entry Created");
+                                    frappe.set_route("Form", "Stock Entry", r.message.name);
+                                }
+                            }
                         });
-                    }
 
-                    if (!items.length) {
-                        frappe.msgprint("❌ Enter qty first");
-                        return;
-                    }
-
-                    frappe.call({
-                        method: "frappe.client.insert",
-                        args: {
-                            doc: {
-                                doctype: "Stock Entry",
-                                stock_entry_type: "Material Issue",
-                                company: frm.doc.company,
-                                custom_username: frm.doc.custom_username,
-                                custom_remark: frm.doc.custom_remark,
-                                custom_attachment: frm.doc.custome_attachment,
-                                items: items
-                            }
-                        },
-                        callback: function(r) {
-                            if (r.message) {
-                                frappe.show_alert({
-                                    message: "✅ Stock Entry Created",
-                                    indicator: "green"
-                                }, 3);
-
-                                frappe.set_route("Form", "Stock Entry", r.message.name);
-                            }
-                        }
+                        d.hide();
                     });
-
-                    d.hide();
                 }
             });
 
@@ -336,7 +348,7 @@ frappe.ui.form.on('Material Indent', {
                 size: 'large',
                 fields: rows.map(row => ({
                     fieldtype: 'Float',
-                    label: `${row.item_code} (Balance: ${row.custom_qty_balanced})`,
+                    label: `${row.item_code} (Bal: ${row.custom_qty_balanced || 0})`,
                     fieldname: row.name,
                     default: 0
                 })),
@@ -345,15 +357,13 @@ frappe.ui.form.on('Material Indent', {
 
                     let items = [];
 
-                    for (let row of rows) {
+                    rows.forEach(row => {
 
                         let qty = values[row.name] || 0;
+                        if (qty <= 0) return;
 
-                        if (qty <= 0) continue;
-
-                        if (qty > row.custom_qty_balanced) {
-                            frappe.msgprint(`❌ Purchase qty exceeds balance for ${row.item_code}`);
-                            return;
+                        if (qty > (row.custom_qty_balanced || 0)) {
+                            frappe.throw(`❌ Purchase qty exceeds balance for ${row.item_code}`);
                         }
 
                         items.push({
@@ -363,10 +373,9 @@ frappe.ui.form.on('Material Indent', {
                             uom: row.uom,
 
                             custom_material_indent: frm.doc.name,
-                            custom_material_indent_item: row.name,
-                            custom_specification: row.custom_specification
+                            custom_material_indent_item: row.name
                         });
-                    }
+                    });
 
                     if (!items.length) {
                         frappe.msgprint("❌ Enter qty first");
@@ -380,19 +389,12 @@ frappe.ui.form.on('Material Indent', {
                                 doctype: "Material Request",
                                 material_request_type: "Purchase",
                                 company: frm.doc.company,
-                                custom_username: frm.doc.custom_username,
-                                custom_remark: frm.doc.custom_remark,
-                                custom_attachment: frm.doc.custome_attachment,
                                 items: items
                             }
                         },
                         callback: function(r) {
                             if (r.message) {
-                                frappe.show_alert({
-                                    message: "✅ Purchase Request Created",
-                                    indicator: "green"
-                                }, 3);
-
+                                frappe.show_alert("✅ Purchase Request Created");
                                 frappe.set_route("Form", "Material Request", r.message.name);
                             }
                         }
@@ -405,15 +407,190 @@ frappe.ui.form.on('Material Indent', {
             d.show();
         });
 
-
-        // 🔥 Rename Actions → Purpose
-        setTimeout(() => {
-            if (frm.page.actions_btn_group) {
-                frm.page.actions_btn_group.find('.dropdown-toggle').html('Purpose');
-            }
-        }, 500);
     }
 });
+
+// frappe.ui.form.on('Material Indent', {
+//     refresh: function(frm) {
+
+//         frm.page.clear_actions_menu();
+
+//         // ==============================
+//         // 🔥 MATERIAL ISSUE (POPUP)
+//         // ==============================
+//         frm.page.add_action_item(__('Material Issue'), function() {
+
+//             let rows = frm.doc.table_feob || [];
+
+//             if (!rows.length) {
+//                 frappe.msgprint("❌ Please add items first");
+//                 return;
+//             }
+
+//             let d = new frappe.ui.Dialog({
+//                 title: 'Enter Issue Qty',
+//                 size: 'large',
+//                 fields: rows.map(row => ({
+//                     fieldtype: 'Float',
+//                     label: `${row.item_code} (Balance: ${row.custom_qty_balanced})`,
+//                     fieldname: row.name,
+//                     default: 0
+//                 })),
+//                 primary_action_label: 'Create Stock Entry',
+//                 primary_action(values) {
+
+//                     let items = [];
+
+//                     for (let row of rows) {
+
+//                         let qty = values[row.name] || 0;
+
+//                         if (qty <= 0) continue;
+
+//                         if (qty > row.custom_qty_balanced) {
+//                             frappe.msgprint(`❌ Issue qty exceeds balance for ${row.item_code}`);
+//                             return;
+//                         }
+
+//                         items.push({
+//                             item_code: row.item_code,
+//                             qty: qty,
+//                             s_warehouse: row.from_warehouse,
+
+//                             custom_material_indent: frm.doc.name,
+//                             custom_material_indent_item: row.name,
+//                             custom_specification: row.custom_specification
+//                         });
+//                     }
+
+//                     if (!items.length) {
+//                         frappe.msgprint("❌ Enter qty first");
+//                         return;
+//                     }
+
+//                     frappe.call({
+//                         method: "frappe.client.insert",
+//                         args: {
+//                             doc: {
+//                                 doctype: "Stock Entry",
+//                                 stock_entry_type: "Material Issue",
+//                                 company: frm.doc.company,
+//                                 custom_username: frm.doc.custom_username,
+//                                 custom_remark: frm.doc.custom_remark,
+//                                 custom_attachment: frm.doc.custome_attachment,
+//                                 items: items
+//                             }
+//                         },
+//                         callback: function(r) {
+//                             if (r.message) {
+//                                 frappe.show_alert({
+//                                     message: "✅ Stock Entry Created",
+//                                     indicator: "green"
+//                                 }, 3);
+
+//                                 frappe.set_route("Form", "Stock Entry", r.message.name);
+//                             }
+//                         }
+//                     });
+
+//                     d.hide();
+//                 }
+//             });
+
+//             d.show();
+//         });
+
+
+//         // ==============================
+//         // 🔥 MATERIAL PURCHASE (POPUP)
+//         // ==============================
+//         frm.page.add_action_item(__('Material Purchase'), function() {
+
+//             let rows = frm.doc.table_feob || [];
+
+//             let d = new frappe.ui.Dialog({
+//                 title: 'Enter Purchase Qty',
+//                 size: 'large',
+//                 fields: rows.map(row => ({
+//                     fieldtype: 'Float',
+//                     label: `${row.item_code} (Balance: ${row.custom_qty_balanced})`,
+//                     fieldname: row.name,
+//                     default: 0
+//                 })),
+//                 primary_action_label: 'Create Purchase Request',
+//                 primary_action(values) {
+
+//                     let items = [];
+
+//                     for (let row of rows) {
+
+//                         let qty = values[row.name] || 0;
+
+//                         if (qty <= 0) continue;
+
+//                         if (qty > row.custom_qty_balanced) {
+//                             frappe.msgprint(`❌ Purchase qty exceeds balance for ${row.item_code}`);
+//                             return;
+//                         }
+
+//                         items.push({
+//                             item_code: row.item_code,
+//                             qty: qty,
+//                             schedule_date: frm.doc.required_by,
+//                             uom: row.uom,
+
+//                             custom_material_indent: frm.doc.name,
+//                             custom_material_indent_item: row.name,
+//                             custom_specification: row.custom_specification
+//                         });
+//                     }
+
+//                     if (!items.length) {
+//                         frappe.msgprint("❌ Enter qty first");
+//                         return;
+//                     }
+
+//                     frappe.call({
+//                         method: "frappe.client.insert",
+//                         args: {
+//                             doc: {
+//                                 doctype: "Material Request",
+//                                 material_request_type: "Purchase",
+//                                 company: frm.doc.company,
+//                                 custom_username: frm.doc.custom_username,
+//                                 custom_remark: frm.doc.custom_remark,
+//                                 custom_attachment: frm.doc.custome_attachment,
+//                                 items: items
+//                             }
+//                         },
+//                         callback: function(r) {
+//                             if (r.message) {
+//                                 frappe.show_alert({
+//                                     message: "✅ Purchase Request Created",
+//                                     indicator: "green"
+//                                 }, 3);
+
+//                                 frappe.set_route("Form", "Material Request", r.message.name);
+//                             }
+//                         }
+//                     });
+
+//                     d.hide();
+//                 }
+//             });
+
+//             d.show();
+//         });
+
+
+//         // 🔥 Rename Actions → Purpose
+//         setTimeout(() => {
+//             if (frm.page.actions_btn_group) {
+//                 frm.page.actions_btn_group.find('.dropdown-toggle').html('Purpose');
+//             }
+//         }, 500);
+//     }
+// });
 
 
 // ==============================
