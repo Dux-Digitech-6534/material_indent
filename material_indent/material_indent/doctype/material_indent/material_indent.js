@@ -294,7 +294,8 @@ frappe.ui.form.on('Material Indent', {
                                 s_warehouse: row.from_warehouse,
 
                                 custom_material_indent: frm.doc.name,
-                                custom_material_indent_item: row.name
+                                custom_material_indent_item: row.name ,
+                                   custom_specification:row.custom_specification
                             });
 
                         });
@@ -321,7 +322,7 @@ frappe.ui.form.on('Material Indent', {
             custom_username: frm.doc.custom_username,
             custom_remark: frm.doc.custom_remark,
             custom_attachment: frm.doc.custome_attachment,
-            custom_specification:frm.doc.custom_specification
+             custom_design: frm.doc.custom_design,
                                 }
                             },
                             callback: function(r) {
@@ -378,7 +379,8 @@ frappe.ui.form.on('Material Indent', {
                             uom: row.uom,
 
                             custom_material_indent: frm.doc.name,
-                            custom_material_indent_item: row.name
+                            custom_material_indent_item: row.name,
+                             custom_specification:row.custom_specification
                         });
                     });
 
@@ -399,7 +401,7 @@ frappe.ui.form.on('Material Indent', {
             custom_username: frm.doc.custom_username,
             custom_remark: frm.doc.custom_remark,
             custom_attachment: frm.doc.custome_attachment,
-            custom_specification:frm.doc.custom_specification
+             custom_design: frm.doc.custom_design,
                             }
                         },
                         callback: function(r) {

@@ -10,6 +10,7 @@
   "naming_series",
   "title",
   "custome_attachment",
+  "custom_design",
   "company",
   "column_break_jyup",
   "transaction_date",
@@ -91,13 +92,18 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "custom_design",
+   "fieldtype": "Attach",
+   "label": "Design"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-03 18:58:15.587873",
- "modified_by": "Administrator",
+ "modified": "2026-04-06 11:57:38.805761",
+ "modified_by": "duxnandkishorkochkar@gmail.com",
  "module": "Material Indent",
  "name": "Material Indent",
  "naming_rule": "By \"Naming Series\" field",
