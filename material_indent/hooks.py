@@ -48,6 +48,13 @@ fixtures = [
                 "Material Request Item-custom_purchase_qty"
             ]]
         ]
+    },
+
+    {
+        "doctype": "Report",
+        "filters": [
+            ["name", "=", "Department Wise Indent Register"]
+        ]
     }
 ]
 
