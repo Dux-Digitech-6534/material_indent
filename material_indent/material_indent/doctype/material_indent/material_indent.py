@@ -1,20 +1,14 @@
 # Copyright (c) 2026, shubhangi pawar and contributors
 # For license information, please see license.txt
 
-# import frappe
-# from frappe.model.document import Document
-
-
-# class MaterialIndent(Document):
-# 	pass
-
-
-
 import frappe
 from frappe.model.document import Document
 
+
 class MaterialIndent(Document):
-    pass
+	pass
+
+
 
 def validate_material_request(doc, method):
 
@@ -29,15 +23,14 @@ def validate_material_request(doc, method):
 
             if row.name == item.custom_material_indent_item:
 
-                purchase_qty = item.qty or 0   # ✅ ERP QTY
+                purchase_qty = item.qty or 0
 
-                remaining = (row.qty or 0) \
-                            - (row.custom_purchase_qty or 0) \
-                            - (row.custom_issue_qty or 0)
+                # ✅ ONLY ISSUE BASED (purchase ignore)
+                remaining = (row.qty or 0) - (row.custom_issue_qty or 0)
 
-                if purchase_qty > remaining:
-                    frappe.throw(f"❌ Purchase qty cannot be greater than remaining qty for {row.item_code}")
-
+                # 👉 अगर purchase limit नहीं चाहिए तो नीचे वाला if हटा दे
+                # if purchase_qty > remaining:
+                #     frappe.throw(f"❌ Purchase qty cannot be greater than required qty for {row.item_code}")
 
 def update_purchase(doc, method):
 
@@ -48,35 +41,19 @@ def update_purchase(doc, method):
 
         indent = frappe.get_doc("Material Indent", item.custom_material_indent)
 
-        updated = False
-
         for row in indent.table_feob:
 
             if row.name == item.custom_material_indent_item:
 
-                purchase_qty = item.qty or 0   # ✅ ERP QTY
-
-                remaining = (row.qty or 0) \
-                            - (row.custom_purchase_qty or 0) \
-                            - (row.custom_issue_qty or 0)
-
-                if purchase_qty > remaining:
-                    frappe.throw(f"❌ Cannot purchase more than remaining qty for {row.item_code}")
+                purchase_qty = item.qty or 0
 
                 # ✅ UPDATE PURCHASE
                 row.custom_purchase_qty = (row.custom_purchase_qty or 0) + purchase_qty
 
-                # ✅ UPDATE BALANCE
-                row.custom_qty_balanced = (row.qty or 0) \
-                                        - row.custom_purchase_qty \
-                                        - (row.custom_issue_qty or 0)
+                # 🔥 FIX: balance ONLY issue से
+                row.custom_qty_balanced = (row.qty or 0) - (row.custom_issue_qty or 0)
 
-                updated = True
-
-        if updated:
-            indent.save(ignore_permissions=True)        
-
-
+        indent.save(ignore_permissions=True)
 
 def validate_stock_entry(doc, method):
 
@@ -91,15 +68,13 @@ def validate_stock_entry(doc, method):
 
             if row.name == item.custom_material_indent_item:
 
-                issue_qty = item.qty or 0   # ✅ ERP QTY
+                issue_qty = item.qty or 0
 
-                remaining = (row.qty or 0) \
-                            - (row.custom_purchase_qty or 0) \
-                            - (row.custom_issue_qty or 0)
+                # 🔥 FIX: purchase ignore
+                remaining = (row.qty or 0) - (row.custom_issue_qty or 0)
 
                 if issue_qty > remaining:
-                    frappe.throw(f"❌ Issue qty cannot be greater than remaining qty for {row.item_code}")                        
-
+                    frappe.throw(f"❌ Issue qty cannot be greater than required qty for {row.item_code}")
 
 def update_issue(doc, method):
 
@@ -110,138 +85,19 @@ def update_issue(doc, method):
 
         indent = frappe.get_doc("Material Indent", item.custom_material_indent)
 
-        updated = False
-
         for row in indent.table_feob:
 
             if row.name == item.custom_material_indent_item:
 
-                issue_qty = item.qty or 0   # ✅ ERP QTY
-
-                remaining = (row.qty or 0) \
-                            - (row.custom_purchase_qty or 0) \
-                            - (row.custom_issue_qty or 0)
-
-                if issue_qty > remaining:
-                    frappe.throw(f"❌ Cannot issue more than remaining qty for {row.item_code}")
+                issue_qty = item.qty or 0
 
                 # ✅ UPDATE ISSUE
                 row.custom_issue_qty = (row.custom_issue_qty or 0) + issue_qty
 
-                # ✅ UPDATE BALANCE
-                row.custom_qty_balanced = (row.qty or 0) \
-                                        - (row.custom_purchase_qty or 0) \
-                                        - row.custom_issue_qty
+                # 🔥 FIX
+                row.custom_qty_balanced = (row.qty or 0) - row.custom_issue_qty
 
-                updated = True
-
-        if updated:
-            indent.save(ignore_permissions=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def validate_material_request(doc, method):
-
-#     for item in doc.items:
-
-#         if item.custom_material_indent and item.custom_material_indent_item:
-
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
-
-#             for row in indent.table_feob:
-
-#                 if row.name == item.custom_material_indent_item:
-
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0)
-
-#                     # 🔥 VALIDATION
-#                     if item.custom_purchase_qty and item.custom_purchase_qty > remaining:
-#                         frappe.throw(f"❌ Purchase qty cannot be greater than remaining qty for {row.item_code}")
-# def update_purchase(doc, method):
-
-#     for item in doc.items:
-
-#         if item.custom_material_indent and item.custom_material_indent_item:
-
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
-
-#             for row in indent.table_feob:
-
-#                 if row.name == item.custom_material_indent_item:
-
-#                     purchased = item.custom_purchase_qty or 0
-
-#                     # 🔥 SAFE VALIDATION AGAIN
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0)
-
-#                     if purchased > remaining:
-#                         frappe.throw(f"❌ Cannot purchase more than remaining qty for {row.item_code}")
-
-#                     row.custom_purchase_qty = (row.custom_purchase_qty or 0) + purchased
-
-#                     row.custom_qty_balanced = (row.qty or 0) - row.custom_purchase_qty - (row.custom_issue_qty or 0)
-
-#             indent.save(ignore_permissions=True)
-
-
-
-
-
-
-# def validate_stock_entry(doc, method):
-
-#     for item in doc.items:
-
-#         if item.custom_material_indent and item.custom_material_indent_item:
-
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
-
-#             for row in indent.table_feob:
-
-#                 if row.name == item.custom_material_indent_item:
-
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0) - (row.custom_issue_qty or 0)
-
-#                     # 🔥 VALIDATION
-#                     if item.custom_issue_qty and item.custom_issue_qty > remaining:
-#                         frappe.throw(f"❌ Issue qty cannot be greater than remaining qty for {row.item_code}")
-
-# def update_issue(doc, method):
-
-#     for item in doc.items:
-
-#         if item.custom_material_indent and item.custom_material_indent_item:
-
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
-
-#             for row in indent.table_feob:
-
-#                 if row.name == item.custom_material_indent_item:
-
-#                     issued = item.custom_issue_qty or 0
-
-#                     # 🔥 SAFE VALIDATION AGAIN
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0) - (row.custom_issue_qty or 0)
-
-#                     if issued > remaining:
-#                         frappe.throw(f"❌ Cannot issue more than remaining qty for {row.item_code}")
-
-#                     row.custom_issue_qty = (row.custom_issue_qty or 0) + issued
-
-#                     row.custom_qty_balanced = (row.qty or 0) - (row.custom_purchase_qty or 0) - row.custom_issue_qty
-
-#             indent.save(ignore_permissions=True)
+        indent.save(ignore_permissions=True)
 
 
 
@@ -262,52 +118,65 @@ def update_issue(doc, method):
 # class MaterialIndent(Document):
 #     pass
 
-
 # def validate_material_request(doc, method):
 
 #     for item in doc.items:
 
-#         if item.custom_material_indent and item.custom_material_indent_item:
+#         if not (item.custom_material_indent and item.custom_material_indent_item):
+#             continue
 
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
+#         indent = frappe.get_doc("Material Indent", item.custom_material_indent)
 
-#             for row in indent.table_feob:
+#         for row in indent.table_feob:
 
-#                 if row.name == item.custom_material_indent_item:
+#             if row.name == item.custom_material_indent_item:
 
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0)
+#                 purchase_qty = item.qty or 0   # ✅ ERP QTY
 
-#                     # 🔥 VALIDATION
-#                     if item.custom_purchase_qty and item.custom_purchase_qty > remaining:
-#                         frappe.throw(f"❌ Purchase qty cannot be greater than remaining qty for {row.item_code}")
+#                 remaining = (row.qty or 0) \
+#                             - (row.custom_purchase_qty or 0) \
+#                             - (row.custom_issue_qty or 0)
+
+#                 if purchase_qty > remaining:
+#                     frappe.throw(f"❌ Purchase qty cannot be greater than remaining qty for {row.item_code}")
+
+
 # def update_purchase(doc, method):
 
 #     for item in doc.items:
 
-#         if item.custom_material_indent and item.custom_material_indent_item:
+#         if not (item.custom_material_indent and item.custom_material_indent_item):
+#             continue
 
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
+#         indent = frappe.get_doc("Material Indent", item.custom_material_indent)
 
-#             for row in indent.table_feob:
+#         updated = False
 
-#                 if row.name == item.custom_material_indent_item:
+#         for row in indent.table_feob:
 
-#                     purchased = item.custom_purchase_qty or 0
+#             if row.name == item.custom_material_indent_item:
 
-#                     # 🔥 SAFE VALIDATION AGAIN
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0)
+#                 purchase_qty = item.qty or 0   # ✅ ERP QTY
 
-#                     if purchased > remaining:
-#                         frappe.throw(f"❌ Cannot purchase more than remaining qty for {row.item_code}")
+#                 remaining = (row.qty or 0) \
+#                             - (row.custom_purchase_qty or 0) \
+#                             - (row.custom_issue_qty or 0)
 
-#                     row.custom_purchase_qty = (row.custom_purchase_qty or 0) + purchased
+#                 if purchase_qty > remaining:
+#                     frappe.throw(f"❌ Cannot purchase more than remaining qty for {row.item_code}")
 
-#                     row.custom_qty_balanced = (row.qty or 0) - row.custom_purchase_qty - (row.custom_issue_qty or 0)
+#                 # ✅ UPDATE PURCHASE
+#                 row.custom_purchase_qty = (row.custom_purchase_qty or 0) + purchase_qty
 
-#             indent.save(ignore_permissions=True)
+#                 # ✅ UPDATE BALANCE
+#                 row.custom_qty_balanced = (row.qty or 0) \
+#                                         - row.custom_purchase_qty \
+#                                         - (row.custom_issue_qty or 0)
 
+#                 updated = True
 
-
+#         if updated:
+#             indent.save(ignore_permissions=True)        
 
 
 
@@ -315,44 +184,70 @@ def update_issue(doc, method):
 
 #     for item in doc.items:
 
-#         if item.custom_material_indent and item.custom_material_indent_item:
+#         if not (item.custom_material_indent and item.custom_material_indent_item):
+#             continue
 
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
+#         indent = frappe.get_doc("Material Indent", item.custom_material_indent)
 
-#             for row in indent.table_feob:
+#         for row in indent.table_feob:
 
-#                 if row.name == item.custom_material_indent_item:
+#             if row.name == item.custom_material_indent_item:
 
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0) - (row.custom_issue_qty or 0)
+#                 issue_qty = item.qty or 0   # ✅ ERP QTY
 
-#                     # 🔥 VALIDATION
-#                     if item.issue_qty and item.issue_qty > remaining:
-#                         frappe.throw(f"❌ Issue qty cannot be greater than remaining qty for {row.item_code}")
+#                 remaining = (row.qty or 0) \
+#                             - (row.custom_purchase_qty or 0) \
+#                             - (row.custom_issue_qty or 0)
+
+#                 if issue_qty > remaining:
+#                     frappe.throw(f"❌ Issue qty cannot be greater than remaining qty for {row.item_code}")                        
+
 
 # def update_issue(doc, method):
 
 #     for item in doc.items:
 
-#         if item.custom_material_indent and item.custom_material_indent_item:
+#         if not (item.custom_material_indent and item.custom_material_indent_item):
+#             continue
 
-#             indent = frappe.get_doc("Material Indent", item.custom_material_indent)
+#         indent = frappe.get_doc("Material Indent", item.custom_material_indent)
 
-#             for row in indent.table_feob:
+#         updated = False
 
-#                 if row.name == item.custom_material_indent_item:
+#         for row in indent.table_feob:
 
-#                     issued = item.issue_qty or 0
+#             if row.name == item.custom_material_indent_item:
 
-#                     # 🔥 SAFE VALIDATION AGAIN
-#                     remaining = (row.qty or 0) - (row.custom_purchase_qty or 0) - (row.custom_issue_qty or 0)
+#                 issue_qty = item.qty or 0   # ✅ ERP QTY
 
-#                     if issued > remaining:
-#                         frappe.throw(f"❌ Cannot issue more than remaining qty for {row.item_code}")
+#                 remaining = (row.qty or 0) \
+#                             - (row.custom_purchase_qty or 0) \
+#                             - (row.custom_issue_qty or 0)
 
-#                     row.custom_issue_qty = (row.custom_issue_qty or 0) + issued
+#                 if issue_qty > remaining:
+#                     frappe.throw(f"❌ Cannot issue more than remaining qty for {row.item_code}")
 
-#                     row.custom_qty_balanced = (row.qty or 0) - (row.custom_purchase_qty or 0) - row.custom_issue_qty
+#                 # ✅ UPDATE ISSUE
+#                 row.custom_issue_qty = (row.custom_issue_qty or 0) + issue_qty
 
+#                 # ✅ UPDATE BALANCE
+#                 row.custom_qty_balanced = (row.qty or 0) \
+#                                         - (row.custom_purchase_qty or 0) \
+#                                         - row.custom_issue_qty
+
+#                 updated = True
+
+#         if updated:
 #             indent.save(ignore_permissions=True)
+
+
+
+
+
+
+
+
+
+
 
 

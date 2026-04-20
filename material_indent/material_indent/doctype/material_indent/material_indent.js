@@ -10,18 +10,6 @@
 
 
 
-
-
-// Copyright (c) 2026, shubhangi pawar and contributors
-// For license information, please see license.txt
-
-// frappe.ui.form.on("Material Indent", {
-// 	refresh(frm) {
-
-// 	},
-// });
-
-
 frappe.ui.form.on('Material Indent', {
     onload: function(frm) {
         if (frm.is_new()) {
@@ -275,7 +263,8 @@ frappe.ui.form.on('Material Indent', {
                         let qty = values[row.name] || 0;
                         if (qty <= 0) return;
 
-                        let p = frappe.db.get_value("Bin", {
+                        let p =
+                         frappe.db.get_value("Bin", {
                             item_code: row.item_code,
                             warehouse: row.from_warehouse
                         }, "actual_qty").then(r => {
@@ -369,10 +358,6 @@ frappe.ui.form.on('Material Indent', {
 
                         let qty = values[row.name] || 0;
                         if (qty <= 0) return;
-
-                        if (qty > (row.custom_qty_balanced || 0)) {
-                            frappe.throw(`❌ Purchase qty exceeds balance for ${row.item_code}`);
-                        }
 
                         items.push({
                             item_code: row.item_code,
@@ -470,10 +455,9 @@ function calculate_remaining(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
 
     let total = flt(row.qty);
-    let purchase = flt(row.custom_purchase_qty);
     let issue = flt(row.custom_issue_qty);
 
-    let remaining = total - purchase - issue;
+    let remaining = total - issue;
 
     if (remaining < 0) {
         frappe.msgprint(`❌ Balance negative for ${row.item_code}`);
@@ -494,11 +478,10 @@ frappe.ui.form.on('Material Indent', {
 
         (frm.doc.table_feob || []).forEach(row => {
 
-            let total = flt(row.qty);
-            let purchase = flt(row.custom_purchase_qty);
-            let issue = flt(row.custom_issue_qty);
+           let total = flt(row.qty);
+let issue = flt(row.custom_issue_qty);
 
-            row.custom_qty_balanced = total - purchase - issue;
+row.custom_qty_balanced = total - issue; 
 
             if (row.custom_qty_balanced < 0) {
                 row.custom_qty_balanced = 0;
@@ -508,6 +491,39 @@ frappe.ui.form.on('Material Indent', {
         frm.refresh_field('table_feob');
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -638,6 +654,8 @@ frappe.ui.form.on('Material Indent', {
 
 
 // // view stock poup 
+
+
 
 
 // frappe.ui.form.on('Material Indent', {
@@ -796,7 +814,8 @@ frappe.ui.form.on('Material Indent', {
 //                         let qty = values[row.name] || 0;
 //                         if (qty <= 0) return;
 
-//                         let p = frappe.db.get_value("Bin", {
+//                         let p =
+//                          frappe.db.get_value("Bin", {
 //                             item_code: row.item_code,
 //                             warehouse: row.from_warehouse
 //                         }, "actual_qty").then(r => {
@@ -1029,6 +1048,28 @@ frappe.ui.form.on('Material Indent', {
 //         frm.refresh_field('table_feob');
 //     }
 // });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
