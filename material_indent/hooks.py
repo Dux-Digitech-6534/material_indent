@@ -18,38 +18,169 @@ doc_events = {
 }
 
 
+
+
+
 fixtures = [
+
+    # =====================================================
+    # CUSTOM FIELD
+    # =====================================================
     {
         "doctype": "Custom Field",
         "filters": [
             ["name", "in", [
-                # 🔹 Parent - Material Request
+
+                # ---------------------------------
+                # Material Indent
+                # ---------------------------------
+                "Material Indent-custom_indent_status",
+                "Material Indent-custom_closed_by_user_",
+                "Material Indent-custom_material_purchase",
+                "Material Indent-custom_material_issue",
+                "Material Indent-custom_status",
+                "Material Indent-custom_info",
+                "Material Indent-custom_stock_entries",
+                "Material Indent-custom_column_break_xemhe",
+                "Material Indent-custom_material_requests",
+                "Material Indent-custom_section_break_kwgez",
+
+                # ---------------------------------
+                # Material Request (Parent)
+                # ---------------------------------
+                "Material Request-custom_material_indent",
+                "Material Request-custom_activity_timeline_json",
+                "Material Request-custom_activity_timeline",
+                "Material Request-custom_section_break_u5yuw",
+                "Material Request-custom_custom_activity_logs",
+                "Material Request-custom_workflow_status",
+                "Material Request-custom_department",
+                "Material Request-custom_category",
+                "Material Request-custom_select_project_",
+                "Material Request-custom_design",
                 "Material Request-custom_attachment",
                 "Material Request-custom_remark",
                 "Material Request-custom_username",
 
-                # 🔹 Parent - Stock Entry
-                "Stock Entry-custom_attachment",
-                "Stock Entry-custom_remark",
-                "Stock Entry-custom_username",
-
-                # 🔹 Child - Stock Entry Detail
-                "Stock Entry Detail-custom_specification",
-                "Stock Entry Detail-custom_material_indent_item",
-                "Stock Entry Detail-custom_material_indent",
-                "Stock Entry Detail-custom_issue_qty",
-
-                # 🔹 Child - Material Request Item
+                # ---------------------------------
+                # Material Request Item (Child)
+                # ---------------------------------
                 "Material Request Item-custom_material_indent_item",
                 "Material Request Item-custom_material_indent",
                 "Material Request Item-custom_specification",
                 "Material Request Item-custom_qty_balanced",
                 "Material Request Item-custom_issue_qty",
-                "Material Request Item-custom_purchase_qty"
+                "Material Request Item-custom_purchase_qty",
+
+                # ---------------------------------
+                # Stock Entry (Parent)
+                # ---------------------------------
+                "Stock Entry-custom_material_indent",
+                "Stock Entry-custom_department",
+                "Stock Entry-custom_design",
+                "Stock Entry-custom_attachment",
+                "Stock Entry-custom_remark",
+                "Stock Entry-custom_username",
+
+                # ---------------------------------
+                # Stock Entry Detail (Child)
+                # ---------------------------------
+                "Stock Entry Detail-custom_qty_balanced",
+                "Stock Entry Detail-custom_specification",
+                "Stock Entry Detail-custom_material_indent_item",
+                "Stock Entry Detail-custom_material_indent",
+                "Stock Entry Detail-custom_issue_qty",
+
+                # ---------------------------------
+                # Purchase Order
+                # ---------------------------------
+                "Purchase Order-custom_approved_by_signature",
+                "Purchase Order-custom_category",
+                "Purchase Order-custom_remark",
+                "Purchase Order-custom_project_name",
+
+                # ---------------------------------
+                # Purchase Order Item
+                # ---------------------------------
+                "Purchase Order Item-custom_specification"
+
+            ]]
+        ]
+    },
+
+    # =====================================================
+    # CLIENT SCRIPT
+    # =====================================================
+    {
+        "doctype": "Client Script",
+        "filters": [
+            ["dt", "in", [
+                "Material Indent",
+                "Material Request",
+                "Stock Entry",
+                "Purchase Order"
+            ]]
+        ]
+    },
+
+    # =====================================================
+    # SERVER SCRIPT
+    # =====================================================
+    {
+        "doctype": "Server Script",
+        "filters": [
+            ["module", "in", [
+                "commit",
+                "Material Indent"
             ]]
         ]
     }
 ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+# fixtures = [
+#     {
+#         "doctype": "Custom Field",
+#         "filters": [
+#             ["name", "in", [
+#                 # 🔹 Parent - Material Request
+#                 "Material Request-custom_attachment",
+#                 "Material Request-custom_remark",
+#                 "Material Request-custom_username",
+
+#                 # 🔹 Parent - Stock Entry
+#                 "Stock Entry-custom_attachment",
+#                 "Stock Entry-custom_remark",
+#                 "Stock Entry-custom_username",
+
+#                 # 🔹 Child - Stock Entry Detail
+#                 "Stock Entry Detail-custom_specification",
+#                 "Stock Entry Detail-custom_material_indent_item",
+#                 "Stock Entry Detail-custom_material_indent",
+#                 "Stock Entry Detail-custom_issue_qty",
+
+#                 # 🔹 Child - Material Request Item
+#                 "Material Request Item-custom_material_indent_item",
+#                 "Material Request Item-custom_material_indent",
+#                 "Material Request Item-custom_specification",
+#                 "Material Request Item-custom_qty_balanced",
+#                 "Material Request Item-custom_issue_qty",
+#                 "Material Request Item-custom_purchase_qty"
+#             ]]
+#         ]
+#     }
+# ]
 
 
 
